@@ -1,0 +1,5 @@
+{
+    "IntParam": 1,
+    "StringParam": "Test",
+    "Extensions": {}
+}
