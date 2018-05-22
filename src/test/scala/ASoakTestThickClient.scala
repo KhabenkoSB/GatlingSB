@@ -7,10 +7,10 @@ import net.liftweb.json.{DefaultFormats, parse}
 import scala.concurrent.duration._
 import scalaj.http.Http
 
-class SoakTest extends Simulation {
+class ASoakTestThickClient extends Simulation {
 
 	val baseUrl = ConfigFactory.load().getString("baseURL")
-	val countUser = ConfigFactory.load().getInt("countUser")
+	val countUser = ConfigFactory.load().getInt("countUserThickClient")
 	val soakTestTime= ConfigFactory.load().getInt("soakTestTimeInMinutes")
 	val stressTestTime = ConfigFactory.load().getInt("stressTestTimeInMinutes")
 	val influxDbURL = ConfigFactory.load().getString("influxDbURL")
@@ -21,16 +21,13 @@ class SoakTest extends Simulation {
 		.baseURL(baseUrl)
 		.inferHtmlResources()
 		.acceptHeader("*/*")
-		.contentTypeHeader("text/plain")
-		.userAgentHeader("PostmanRuntime/7.1.1")
 
 
-	val uri1 = baseUrl +"/TestMicroservice/Example"
-
-	val scn = scenario("SoakTest")
-		.exec(http("TestMicroservice/Example")
-			.post("/TestMicroservice/Example")
+	val scn = scenario("CallOtherMicroservice")
+		.exec(http("CallOtherMicroservice/TriggerTestMicroservice")
+			.post("/CallOtherMicroservice/TriggerTestMicroservice")
 			.body(RawFileBody("SoakTest_0000_request.txt")))
+
 
 	setUp(scn.inject(constantUsersPerSec(countUser) during(soakTestTime minutes)).protocols(httpProtocol))
 
@@ -64,5 +61,4 @@ class SoakTest extends Simulation {
 		println("******************")
 
 	}
-
 }
